@@ -13,7 +13,9 @@ class Flash extends StatefulWidget {
 class _FlashState extends State<Flash> {
   checkAppVersion() async {
     bool bol = await Api.getApiVersion();
-    if (bol) {
+    bool checkTags = await Api.getAllTags();
+    bool checkCats = await Api.getAllCats();
+    if (bol && checkTags && checkCats) {
       Navigator.pushReplacementNamed(context, "/home");
     }
   }
