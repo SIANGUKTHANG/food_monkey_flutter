@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodmonkey/models/Category.dart';
+import 'package:foodmonkey/models/Product.dart';
 import 'package:foodmonkey/models/Tag.dart';
 
 class Constants {
@@ -26,8 +27,49 @@ class Constants {
   }
 
   static String changeImage(String image) {
-    var img = "http://192.168.8.104:3000/uploads/" + image.split("uploads")[1];
+    var img = "http://192.168.8.105:3000/uploads/" + image.split("uploads")[1];
     print("img is " + img);
     return img;
+  }
+
+  static List<Product> cartProducts = [];
+
+  static addToCard(product) {
+    bool exist = false;
+    if (cartProducts.length > 0) {
+      cartProducts.forEach((pro) {
+        if (pro.id == product.id) {
+          exist = true;
+          pro.count++;
+        }
+      });
+      if (!exist) {
+        cartProducts.add(product);
+      }
+    } else {
+      cartProducts.add(product);
+    }
+  }
+
+  static removeProduct(product) {
+    cartProducts.removeWhere((pro) => pro.id == product.id);
+  }
+
+  static reduceProductCount(product) {
+    cartProducts.forEach((pro) {
+      if (pro.id == product.id) {
+        if (pro.count > 1) {
+          pro.count--;
+        }
+      }
+    });
+  }
+
+  static addProductCount(product) {
+    cartProducts.forEach((pro) {
+      if (pro.id == product.id) {
+        pro.count++;
+      }
+    });
   }
 }

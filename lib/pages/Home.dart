@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swipper/flutter_card_swiper.dart';
 import 'package:foodmonkey/models/Category.dart';
-import 'package:foodmonkey/pages/Product.dart';
+import 'package:foodmonkey/pages/ProductPage.dart';
 import 'package:foodmonkey/utils/Constants.dart';
 
 class Home extends StatefulWidget {
@@ -29,7 +29,7 @@ class _HomeState extends State<Home> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => Product(
+                              builder: (context) => ProductPage(
                                   type: "Tag",
                                   name: Constants.tags[index].name)));
                     },
@@ -70,7 +70,7 @@ class _HomeState extends State<Home> {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              Product(type: "Category", name: cat.name)));
+                              ProductPage(type: "Category", name: cat.name)));
                 },
                 child: Image.network(Constants.changeImage(cat.image ?? ""))),
             SizedBox(height: 3),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:foodmonkey/models/Category.dart';
+import 'package:foodmonkey/models/Product.dart';
 import 'package:foodmonkey/models/Tag.dart';
 import 'package:http/http.dart' as http;
 import 'package:foodmonkey/utils/Constants.dart';
@@ -41,5 +42,18 @@ class Api {
     }
 
     return response["con"];
+  }
+
+  static Future<List<Product>> getPagintatedProduct(pageNo) async {
+    Uri uri = Uri.parse("${Constants.API_URL}/products/${pageNo}");
+    var resStr = await http.get(uri);
+    var response = jsonDecode(resStr.body);
+    List<Product> products = [];
+    if (response["con"]) {
+      var catList = response["result"] as List;
+      products = catList.map((tag) => Product.fromJson(tag)).toList();
+    }
+    print(products.length);
+    return products;
   }
 }
