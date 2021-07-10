@@ -27,7 +27,7 @@ class Constants {
   }
 
   static String changeImage(String image) {
-    var img = "http://192.168.8.105:3000/uploads/" + image.split("uploads")[1];
+    var img = "http://192.168.8.104:3000/uploads/" + image.split("uploads")[1];
     print("img is " + img);
     return img;
   }
@@ -71,5 +71,34 @@ class Constants {
         pro.count++;
       }
     });
+  }
+
+  static Padding getCartAction(context, color) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, right: 20),
+      child: Stack(
+        overflow: Overflow.visible,
+        children: [
+          Icon(Icons.shopping_cart, size: 40, color: color),
+          Positioned(
+            right: -2,
+            top: -7,
+            child: Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: Constants.accent,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                    child: Text(
+                        Constants.cartProducts.length
+                            .toString()
+                            .padLeft(2, "0"),
+                        style: TextStyle(fontSize: 12)))),
+          )
+        ],
+      ),
+    );
   }
 }

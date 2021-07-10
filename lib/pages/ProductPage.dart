@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:foodmonkey/models/Product.dart';
 import 'package:foodmonkey/models/Tag.dart';
+import 'package:foodmonkey/pages/Preview.dart';
 import 'package:foodmonkey/utils/Api.dart';
 import 'package:foodmonkey/utils/Constants.dart';
 
@@ -28,7 +29,7 @@ class _ProductPageState extends State<ProductPage> {
       isLoading = true;
     });
     List<Product> ps = await Api.getPagintatedProduct(pageNo);
-    await Future.delayed(Duration(seconds: 5));
+    // await Future.delayed(Duration(seconds: 5));
     setState(() {
       products.addAll(ps);
       pageNo++;
@@ -47,34 +48,7 @@ class _ProductPageState extends State<ProductPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text("$type : $name"),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(top: 10, right: 20),
-              child: Stack(
-                overflow: Overflow.visible,
-                children: [
-                  Icon(Icons.shopping_cart, size: 40),
-                  Positioned(
-                    right: -2,
-                    top: -7,
-                    child: Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          color: Constants.accent,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                            child: Text(
-                                Constants.cartProducts.length
-                                    .toString()
-                                    .padLeft(2, "0"),
-                                style: TextStyle(fontSize: 12)))),
-                  )
-                ],
-              ),
-            )
-          ],
+          actions: [Constants.getCartAction(context, Constants.primary)],
         ),
         body: Column(
           children: [
@@ -125,10 +99,18 @@ class _ProductPageState extends State<ProductPage> {
         child: Column(
           children: [
             Text(product.name ?? ""),
-            Image.network(
-              Constants.changeImage(product.images?[0] ?? ""),
-              width: 120,
-              height: 120,
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Preview(product: product)));
+              },
+              child: Image.network(
+                Constants.changeImage(product.images?[0] ?? ""),
+                width: 120,
+                height: 120,
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
