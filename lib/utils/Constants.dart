@@ -17,6 +17,12 @@ class Constants {
 
   static const BASE_URL = "http://10.0.2.2:3000";
   static const API_URL = "$BASE_URL/api";
+  static const String sampleText = """
+  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores iure impedit nulla eligendi dolorum neque amet id deleniti! Non a nesciunt sapiente exercitationem velit aspernatur consequatur asperiores molestiae blanditiis cum?""";
+  static const String sampleImg1 =
+      "http://192.168.8.104:3000/uploads/7_Day_Return_Warrranty_1625998058309.png";
+  static const String sampleImg2 =
+      "http://192.168.8.104:3000/uploads/7_Day_Return_Warrranty_1625998114663.png";
 
   static List<Tag> tags = [];
   static List<Category> cats = [];

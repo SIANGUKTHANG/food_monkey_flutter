@@ -22,7 +22,11 @@ class _PreviewState extends State<Preview> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Preview Page"),
-          actions: [Constants.getCartAction(context, Constants.primary)],
+          actions: [
+            InkWell(
+                onTap: () => Navigator.pushNamed(context, "/cart"),
+                child: Constants.getCartAction(context, Constants.primary))
+          ],
         ),
         body: Stack(
           children: [

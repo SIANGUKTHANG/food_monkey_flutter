@@ -48,7 +48,11 @@ class _ProductPageState extends State<ProductPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text("$type : $name"),
-          actions: [Constants.getCartAction(context, Constants.primary)],
+          actions: [
+            InkWell(
+                onTap: () => Navigator.pushNamed(context, "/cart"),
+                child: Constants.getCartAction(context, Constants.primary))
+          ],
         ),
         body: Column(
           children: [
