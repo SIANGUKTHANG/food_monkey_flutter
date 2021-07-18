@@ -28,6 +28,11 @@ class Constants {
   static List<Tag> tags = [];
   static List<Category> cats = [];
   static User? user;
+  static Map<String, String> headers = {"content-type": "application/json"};
+  static Map<String, String> tokenHeader = {
+    "content-type": "application/json",
+    "authorization": "Bearer ${user?.token}"
+  };
 
   static TextStyle getTitleTextStyle(double size) {
     return TextStyle(
@@ -116,5 +121,16 @@ class Constants {
         ],
       ),
     );
+  }
+
+  static generateOrder() {
+    List<Map> cartList = [];
+    cartProducts.forEach((prd) {
+      var map = new Map();
+      map["count"] = prd.count.toString();
+      map["productId"] = prd.id;
+      cartList.add(map);
+    });
+    return cartList;
   }
 }

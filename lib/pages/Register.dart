@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:foodmonkey/helpers/TrianglePainter.dart';
-import 'package:foodmonkey/pages/Register.dart';
 import 'package:foodmonkey/utils/Api.dart';
 import 'package:foodmonkey/utils/Constants.dart';
 
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class Register extends StatefulWidget {
+  const Register({Key? key}) : super(key: key);
 
   @override
-  _LoginState createState() => _LoginState();
+  _RegisterState createState() => _RegisterState();
 }
 
-class _LoginState extends State<Login> {
-  final _phoneController = TextEditingController(text: "09111111111");
-  final _passwordController = TextEditingController(text: "@123!Abc");
+class _RegisterState extends State<Register> {
+  final _nameInputController = TextEditingController();
+  final _emailInputController = TextEditingController();
+  final _phoneInputController = TextEditingController();
+  final _passwordInputController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     var msize = MediaQuery.of(context).size;
     return Scaffold(
-        appBar: AppBar(title: Text("Login")),
+        appBar: AppBar(title: Text("Register")),
         body: SingleChildScrollView(
           child: Stack(
             children: [
@@ -29,16 +31,46 @@ class _LoginState extends State<Login> {
                   // mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 30),
+                    SizedBox(height: 10),
                     Center(child: Image.asset("assets/images/fm.png")),
-                    SizedBox(height: 20),
-                    Text("Login", style: Constants.getTitleTextStyle(45)),
-                    SizedBox(height: 50),
+                    SizedBox(height: 10),
+                    Text("Register", style: Constants.getTitleTextStyle(45)),
+                    SizedBox(height: 10),
                     Form(
                         child: Column(
                       children: [
                         TextFormField(
-                          controller: _phoneController,
+                          controller: _nameInputController,
+                          decoration: InputDecoration(
+                            labelText: "Name",
+                            labelStyle: TextStyle(
+                                color: Constants.normal, fontSize: 20),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Constants.normal)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Constants.normal)),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          controller: _emailInputController,
+                          decoration: InputDecoration(
+                            labelText: "Email",
+                            labelStyle: TextStyle(
+                                color: Constants.normal, fontSize: 20),
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Constants.normal)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Constants.normal)),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          controller: _phoneInputController,
                           decoration: InputDecoration(
                             labelText: "Phone",
                             labelStyle: TextStyle(
@@ -51,9 +83,9 @@ class _LoginState extends State<Login> {
                                     BorderSide(color: Constants.normal)),
                           ),
                         ),
-                        SizedBox(height: 30),
+                        SizedBox(height: 20),
                         TextFormField(
-                          controller: _passwordController,
+                          controller: _passwordInputController,
                           obscureText: true,
                           decoration: InputDecoration(
                             labelText: "password",
@@ -69,19 +101,15 @@ class _LoginState extends State<Login> {
                         )
                       ],
                     )),
-                    SizedBox(height: 50),
+                    SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Column(
                           children: [
                             InkWell(
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Register())),
-                                child: Text(
-                                    "Not a member yet!\n Please register here!")),
+                                onTap: () => Navigator.pop(context),
+                                child: Text("Already Member! Login Here")),
                             SizedBox(height: 5),
                             Container(
                               width: 50,
@@ -93,16 +121,21 @@ class _LoginState extends State<Login> {
                         ),
                         FlatButton(
                             onPressed: () async {
-                              var phone = _phoneController.text;
-                              var password = _passwordController.text;
+                              var name = _nameInputController.text;
+                              var email = _emailInputController.text;
+                              var phone = _phoneInputController.text;
+                              var password = _passwordInputController.text;
 
-                              bool bol = await Api.login(
-                                  phone: phone, password: password);
+                              bool bol = await Api.register(
+                                  name: name,
+                                  email: email,
+                                  phone: phone,
+                                  password: password);
 
                               if (bol)
                                 Navigator.pop(context);
                               else
-                                print("Login Fail");
+                                print("Register Fail!");
                             },
                             padding: EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 10),
@@ -114,7 +147,7 @@ class _LoginState extends State<Login> {
                               children: [
                                 Icon(Icons.lock, color: Constants.primary),
                                 SizedBox(width: 5),
-                                Text("Login",
+                                Text("Regoster",
                                     style: TextStyle(
                                         color: Constants.primary,
                                         fontSize: 20,

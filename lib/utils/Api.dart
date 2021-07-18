@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:foodmonkey/models/Category.dart';
 import 'package:foodmonkey/models/Product.dart';
 import 'package:foodmonkey/models/Tag.dart';
+import 'package:foodmonkey/models/User.dart';
 import 'package:http/http.dart' as http;
 import 'package:foodmonkey/utils/Constants.dart';
 
@@ -55,5 +56,34 @@ class Api {
     }
     print(products.length);
     return products;
+  }
+
+  static Future<bool> register({name, email, phone, password}) async {
+    Uri uri = Uri.parse("${Constants.BASE_URL}/user/register");
+    var json = jsonEncode(
+        {"name": name, "email": email, "phone": phone, "password": password});
+    var response = await http.post(uri, body: json, headers: Constants.headers);
+    var responseData = jsonDecode(response.body);
+    print(responseData);
+    return true;
+  }
+
+  static Future<bool> login({phone, password}) async {
+    Uri uri = Uri.parse("${Constants.BASE_URL}/user");
+    var json = jsonEncode({"phone": phone, "password": password});
+    var response = await http.post(uri, body: json, headers: Constants.headers);
+    var responseData = jsonDecode(response.body);
+    Constants.user = User.fromJson(responseData["result"]);
+    return true;
+  }
+
+  static Future<bool> orderUpload({total, items}) async {
+    Uri uri = Uri.parse("${Constants.API_URL}/order");
+    var json = jsonEncode({"total": total, "items": items});
+    var response =
+        await http.post(uri, body: json, headers: Constants.tokenHeader);
+    var responseData = jsonDecode(response.body);
+    print(responseData);
+    return responseData["con"];
   }
 }
