@@ -39,6 +39,8 @@ class Item {
       this.productId,
       this.order,
       this.name,
+      this.count,
+      this.price,
       this.created});
 
   factory Item.fromJson(dynamic data) {
@@ -49,6 +51,8 @@ class Item {
       id: data["_id"],
       productId: data["productId"],
       order: data["order"],
+      count: data["count"],
+      price: data["price"],
       name: data["name"],
       created: data["created"],
     );

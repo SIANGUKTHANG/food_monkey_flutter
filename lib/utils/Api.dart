@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:foodmonkey/models/Category.dart';
+import 'package:foodmonkey/models/History.dart';
 import 'package:foodmonkey/models/Product.dart';
 import 'package:foodmonkey/models/Tag.dart';
 import 'package:foodmonkey/models/User.dart';
@@ -85,5 +86,20 @@ class Api {
     var responseData = jsonDecode(response.body);
     print(responseData);
     return responseData["con"];
+  }
+
+  static Future<List<History>> getMyOrders() async {
+    var url = "${Constants.API_URL}/userorder/${Constants.user?.id}";
+
+    var response = await http.get(Uri.parse(url));
+    var responseData = jsonDecode(response.body);
+
+    List<History> hs = [];
+    if (responseData['con']) {
+      var data = responseData['result'] as List;
+      hs = data.map((e) => History.fromJson(e)).toList();
+    }
+    print(hs.length);
+    return hs;
   }
 }

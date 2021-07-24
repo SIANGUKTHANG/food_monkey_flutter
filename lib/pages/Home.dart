@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swipper/flutter_card_swiper.dart';
 import 'package:foodmonkey/models/Category.dart';
+import 'package:foodmonkey/models/History.dart';
+import 'package:foodmonkey/pages/Chat.dart';
+import 'package:foodmonkey/pages/HistoryPage.dart';
+import 'package:foodmonkey/pages/Login.dart';
 import 'package:foodmonkey/pages/ProductPage.dart';
 import 'package:foodmonkey/utils/Constants.dart';
 
@@ -15,7 +19,41 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Home Page")),
+        appBar: AppBar(
+          title: Text("Home Page"),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: InkWell(
+                  onTap: () {
+                    if (Constants.user != null) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HistoryPage()));
+                    } else {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Login()));
+                    }
+                  },
+                  child: Icon(Icons.history)),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: InkWell(
+                  onTap: () {
+                    if (Constants.user != null) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Chat()));
+                    } else {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Login()));
+                    }
+                  },
+                  child: Icon(Icons.chat)),
+            )
+          ],
+        ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

@@ -16,7 +16,7 @@ class Constants {
 
   static const double APP_VERSION = 1.0;
 
-  static const BASE_URL = "http://192.168.8.101:3000";
+  static const BASE_URL = "http://192.168.8.102:3000";
   static const API_URL = "$BASE_URL/api";
   static const String sampleText = """
   Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores iure impedit nulla eligendi dolorum neque amet id deleniti! Non a nesciunt sapiente exercitationem velit aspernatur consequatur asperiores molestiae blanditiis cum?""";
