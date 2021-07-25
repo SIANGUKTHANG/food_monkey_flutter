@@ -99,10 +99,12 @@ class _LoginState extends State<Login> {
                               bool bol = await Api.login(
                                   phone: phone, password: password);
 
-                              if (bol)
+                              if (bol) {
+                                Constants.getSocket();
                                 Navigator.pop(context);
-                              else
+                              } else {
                                 print("Login Fail");
+                              }
                             },
                             padding: EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 10),

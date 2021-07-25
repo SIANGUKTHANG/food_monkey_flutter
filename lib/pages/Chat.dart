@@ -1,6 +1,5 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
+import 'package:foodmonkey/models/Message.dart';
 import 'package:foodmonkey/utils/Constants.dart';
 
 class Chat extends StatefulWidget {
@@ -11,17 +10,38 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> {
-  List<Map> chats = [
-    {"from": "Mg Mg", "to": "Aung Aung", "msg": "M to A", "type": "text"},
-    {"from": "Aung Aung", "to": "Mg Mg", "msg": "A to M", "type": "text"},
-    {"from": "Mg Mg", "to": "Aung Aung", "msg": "image Link", "type": "photo"},
-    {"from": "Aung Aung", "to": "Mg Mg", "msg": "image Link", "type": "photo"},
-    {"from": "Mg Mg", "to": "Aung Aung", "msg": "M to A", "type": "text"},
-    {"from": "Aung Aung", "to": "Mg Mg", "msg": "A to M", "type": "text"},
-    {"from": "Mg Mg", "to": "Aung Aung", "msg": "image Link", "type": "photo"},
-    {"from": "Aung Aung", "to": "Mg Mg", "msg": "image Link", "type": "photo"}
-  ];
+  List<Message> chats = [];
   final _chatTextController = TextEditingController();
+
+  invokeSocket() {
+    Constants.socket?.emit('load');
+    Constants.socket?.on('message', (data) {
+      Message msg = Message.fromJson(data);
+      chats.add(msg);
+      setState(() {});
+    });
+    Constants.socket?.on('messages', (data) {
+      List lisy = data as List;
+      chats = lisy.map((e) => Message.fromJson(e)).toList();
+      setState(() {});
+    });
+  }
+
+  _emitMessage(msg, type) {
+    var sendMsg = new Map();
+    sendMsg["from"] = Constants.user?.id;
+    sendMsg["to"] = Constants.shopId;
+    sendMsg["msg"] = msg;
+    sendMsg["type"] = type;
+    Constants.socket?.emit("message", sendMsg);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    invokeSocket();
+  }
+
   @override
   Widget build(BuildContext context) {
     var mwidth = MediaQuery.of(context).size.width;
@@ -31,9 +51,10 @@ class _ChatState extends State<Chat> {
         Expanded(
           child: ListView.builder(
             itemCount: chats.length,
-            itemBuilder: (context, index) => chats[index]['from'] == "Mg Mg"
-                ? _buildLeftChat(chats[index], mwidth)
-                : _buildRightChat(chats[index], mwidth),
+            itemBuilder: (context, index) =>
+                chats[index].from?.name == Constants.user?.name
+                    ? _buildLeftChat(chats[index], mwidth)
+                    : _buildRightChat(chats[index], mwidth),
           ),
         ),
         Container(
@@ -59,9 +80,14 @@ class _ChatState extends State<Chat> {
                   ),
                 ),
               ),
-              Icon(
-                Icons.send,
-                size: 35,
+              InkWell(
+                onTap: () {
+                  _emitMessage(_chatTextController.text, "text");
+                },
+                child: Icon(
+                  Icons.send,
+                  size: 35,
+                ),
               ),
             ],
           ),
@@ -71,43 +97,43 @@ class _ChatState extends State<Chat> {
   }
 
   Widget _buildLeftChat(chat, mwidth) {
-    return chat["type"] == "text"
+    return chat.type == "text"
         ? _buildLeftText(chat, mwidth)
-        : _buildLeftImage(chat["msg"], mwidth);
+        : _buildLeftImage(chat.msg, mwidth);
   }
 
   Widget _buildRightChat(chat, mwidth) {
-    return chat["type"] == "text"
+    return chat.type == "text"
         ? _buildRightText(chat, mwidth)
-        : _buildRightImage(chat["msg"], mwidth);
+        : _buildRightImage(chat.msg, mwidth);
   }
 
   Widget _buildLeftText(chat, mwidth) {
     return Row(mainAxisAlignment: MainAxisAlignment.start, children: [
       Container(
         width: (mwidth / 3) * 2,
-        // padding: EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(15),
         margin: EdgeInsets.all(10),
         decoration: BoxDecoration(
-            // color: Constants.secondary,
+            color: Constants.secondary,
             borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-          bottomRight: Radius.circular(30),
-        )),
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+              bottomLeft: Radius.circular(30),
+            )),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Mg Mg",
+            Text(chat.from.name,
                 style: TextStyle(
                     color: Constants.normal, fontWeight: FontWeight.bold)),
-            Text(Constants.sampleText,
+            Text(chat.msg,
                 textAlign: TextAlign.justify,
                 style: TextStyle(color: Constants.normal)),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text("2020-07-04",
+                Text(chat.created.split("T")[0],
                     style: TextStyle(
                         color: Constants.primary, fontWeight: FontWeight.bold))
               ],
@@ -119,14 +145,72 @@ class _ChatState extends State<Chat> {
   }
 
   Widget _buildLeftImage(image, mwidth) {
-    return Image.asset("assets/images/fm.png");
+    return Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+      Container(
+          width: (mwidth / 3) * 2,
+          padding: EdgeInsets.all(5),
+          margin: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              color: Constants.secondary,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+                bottomLeft: Radius.circular(30),
+              )),
+          child: Image.asset("assets/images/fm.png"))
+    ]);
   }
 
   Widget _buildRightText(chat, mwidth) {
-    return Text(chat["msg"]);
+    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+      Container(
+        width: (mwidth / 3) * 2,
+        padding: EdgeInsets.all(15),
+        margin: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: Constants.accent,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            )),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(chat.from.name,
+                style: TextStyle(
+                    color: Constants.normal, fontWeight: FontWeight.bold)),
+            Text(chat.msg,
+                textAlign: TextAlign.justify,
+                style: TextStyle(color: Constants.normal)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(chat.created.split("T")[0],
+                    style: TextStyle(
+                        color: Constants.primary, fontWeight: FontWeight.bold))
+              ],
+            )
+          ],
+        ),
+      )
+    ]);
   }
 
   Widget _buildRightImage(image, mwidth) {
-    return Image.asset("assets/images/fm.png");
+    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+      Container(
+          width: (mwidth / 3) * 2,
+          padding: EdgeInsets.all(5),
+          margin: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              color: Constants.secondary,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+                bottomLeft: Radius.circular(30),
+              )),
+          child: Image.asset("assets/images/fm.png"))
+    ]);
   }
 }

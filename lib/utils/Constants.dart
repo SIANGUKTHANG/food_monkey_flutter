@@ -3,6 +3,8 @@ import 'package:foodmonkey/models/Category.dart';
 import 'package:foodmonkey/models/Product.dart';
 import 'package:foodmonkey/models/Tag.dart';
 import 'package:foodmonkey/models/User.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart';
 
 class Constants {
   static const Color primary = Color(0xFFF6F6F6);
@@ -16,8 +18,9 @@ class Constants {
 
   static const double APP_VERSION = 1.0;
 
-  static const BASE_URL = "http://192.168.8.102:3000";
+  static const BASE_URL = "http://192.168.8.103:3000";
   static const API_URL = "$BASE_URL/api";
+  static const String shopId = "605c19163bac7310fb16aabc";
   static const String sampleText = """
   Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores iure impedit nulla eligendi dolorum neque amet id deleniti! Non a nesciunt sapiente exercitationem velit aspernatur consequatur asperiores molestiae blanditiis cum?""";
   static const String sampleImg1 =
@@ -33,6 +36,17 @@ class Constants {
     "content-type": "application/json",
     "authorization": "Bearer ${user?.token}"
   };
+
+  static IO.Socket? socket;
+  static String SOCKET_ENDPOINT = "$BASE_URL/chat?token=${user?.token}";
+
+  static getSocket() {
+    socket = IO.io(
+        SOCKET_ENDPOINT, OptionBuilder().setTransports(['websocket']).build());
+    socket?.onConnect((_) {
+      print('connect');
+    });
+  }
 
   static TextStyle getTitleTextStyle(double size) {
     return TextStyle(
