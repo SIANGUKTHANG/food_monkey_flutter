@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:foodmonkey/models/ImgResult.dart';
 import 'package:foodmonkey/models/Message.dart';
 import 'package:foodmonkey/utils/Constants.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class Chat extends StatefulWidget {
   const Chat({Key? key}) : super(key: key);
@@ -13,12 +19,21 @@ class _ChatState extends State<Chat> {
   List<Message> chats = [];
   final _chatTextController = TextEditingController();
 
+  final picker = ImagePicker();
+  File? _image;
+  ScrollController _scrollController =
+      ScrollController(initialScrollOffset: 50);
   invokeSocket() {
     Constants.socket?.emit('load');
     Constants.socket?.on('message', (data) {
       Message msg = Message.fromJson(data);
       chats.add(msg);
-      setState(() {});
+      setState(() {
+        _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent + 450,
+            duration: Duration(seconds: 1),
+            curve: Curves.fastOutSlowIn);
+      });
     });
     Constants.socket?.on('messages', (data) {
       List lisy = data as List;
@@ -50,6 +65,7 @@ class _ChatState extends State<Chat> {
       children: [
         Expanded(
           child: ListView.builder(
+            controller: _scrollController,
             itemCount: chats.length,
             itemBuilder: (context, index) =>
                 chats[index].from?.name == Constants.user?.name
@@ -63,9 +79,12 @@ class _ChatState extends State<Chat> {
           padding: EdgeInsets.all(8),
           child: Row(
             children: [
-              Icon(
-                Icons.file_copy,
-                size: 35,
+              InkWell(
+                onTap: () => _getImage(),
+                child: Icon(
+                  Icons.file_copy,
+                  size: 35,
+                ),
               ),
               Expanded(
                 child: TextFormField(
@@ -94,6 +113,35 @@ class _ChatState extends State<Chat> {
         )
       ],
     ));
+  }
+
+  _uploadImageNow() async {
+    var galleryUri = Uri.parse("${Constants.BASE_URL}/gallery");
+
+    http.MultipartRequest request =
+        new http.MultipartRequest("POST", galleryUri);
+
+    http.MultipartFile multipartFile =
+        await http.MultipartFile.fromPath("photo", _image?.path ?? "");
+    request.files.add(multipartFile);
+
+    await request.send().then((response) async {
+      response.stream.transform(utf8.decoder).listen((value) {
+        var resData = jsonDecode(value);
+        ImgResult imageRes = ImgResult.fromJson(resData["result"]);
+        _emitMessage(imageRes.link, "image");
+      });
+    }).catchError((e) => print(e));
+  }
+
+  Future _getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      print("Image Path");
+      print(pickedFile?.path);
+      _image = File(pickedFile?.path ?? "");
+      _uploadImageNow();
+    });
   }
 
   Widget _buildLeftChat(chat, mwidth) {
@@ -157,7 +205,7 @@ class _ChatState extends State<Chat> {
                 topRight: Radius.circular(30),
                 bottomLeft: Radius.circular(30),
               )),
-          child: Image.asset("assets/images/fm.png"))
+          child: Image.network(_changeImage(image)))
     ]);
   }
 
@@ -210,7 +258,13 @@ class _ChatState extends State<Chat> {
                 topRight: Radius.circular(30),
                 bottomLeft: Radius.circular(30),
               )),
-          child: Image.asset("assets/images/fm.png"))
+          child: Image.network(_changeImage(image)))
     ]);
+  }
+
+  static String _changeImage(String image) {
+    var img = "${Constants.BASE_URL}/uploads" + image.split("uploads")[1];
+    print("Changed Image is $img");
+    return img;
   }
 }
